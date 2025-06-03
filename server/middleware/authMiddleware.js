@@ -4,11 +4,13 @@ import User from '../models/User.js'
 const verifyUser = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ success: false, error: 'No token provided.' })
     }
 
     const token = authHeader.split(' ')[1]
+
     const decoded = jwt.verify(token, process.env.JWT_KEY)
 
     const user = await User.findById(decoded._id).select('-password')
@@ -20,6 +22,11 @@ const verifyUser = async (req, res, next) => {
     next()
   } catch (error) {
     console.error('JWT Verification Error:', error.message)
+
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ success: false, error: 'Token has expired.' })
+    }
+
     return res.status(401).json({ success: false, error: 'Unauthorized. Invalid or expired token.' })
   }
 }

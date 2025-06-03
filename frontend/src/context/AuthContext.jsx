@@ -7,6 +7,15 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  const login = (userData) => {
+    setUser(userData)
+  }
+
+  const logout = () => {
+    localStorage.removeItem('token')
+    setUser(null)
+  }
+
   useEffect(() => {
     const verifyUser = async () => {
       const token = localStorage.getItem('token')
@@ -26,6 +35,7 @@ export const AuthProvider = ({ children }) => {
           setUser(response.data.user)
         } else {
           setUser(null)
+          setLoading(false)
         }
       } catch (error) {
         console.error('Verification failed:', error.message)
@@ -38,15 +48,6 @@ export const AuthProvider = ({ children }) => {
 
     verifyUser()
   }, [])
-
-  const login = (userData) => {
-    setUser(userData)
-  }
-
-  const logout = () => {
-    localStorage.removeItem('token')
-    setUser(null)
-  }
 
   return (
     <userContext.Provider value={{ user, login, logout, loading }}>

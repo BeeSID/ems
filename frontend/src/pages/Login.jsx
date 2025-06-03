@@ -4,7 +4,7 @@ import { IoEye, IoEyeOff } from 'react-icons/io5'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast, Toaster } from 'react-hot-toast'
 import axios from 'axios'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/authContext'
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
