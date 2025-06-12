@@ -1,11 +1,24 @@
 import Department from "../models/Department.js";
 
-// Controller to handle adding a new department
+// Get all departments
+const getDepartments = async (req, res) => {
+  try {
+    const departments = await Department.find();
+    return res.status(200).json({ success: true, departments });
+  } catch (error) {
+    console.error("Error fetching departments:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Internal server error while fetching departments"
+    });
+  }
+};
+
+// Add a new department
 const addDepartment = async (req, res) => {
   try {
     const { dep_name, description } = req.body;
 
-    // Validate: dep_name must be provided
     if (!dep_name || dep_name.trim() === '') {
       return res.status(400).json({
         success: false,
@@ -13,7 +26,6 @@ const addDepartment = async (req, res) => {
       });
     }
 
-    // Check for existing department (case-insensitive match)
     const existing = await Department.findOne({
       dep_name: new RegExp(`^${dep_name.trim()}$`, 'i')
     });
@@ -25,23 +37,19 @@ const addDepartment = async (req, res) => {
       });
     }
 
-    // Create a new department document
     const newDep = new Department({
       dep_name: dep_name.trim(),
-      description: description?.trim() || "" // Default to empty string if no description
+      description: typeof description === 'string' ? description.trim() : ""
     });
 
-    // Save to the database
     await newDep.save();
 
-    // Respond with the created department
     return res.status(201).json({
       success: true,
       department: newDep
     });
 
   } catch (error) {
-    // Log and return error if something goes wrong
     console.error("Error adding department:", error);
     return res.status(500).json({
       success: false,
@@ -50,4 +58,4 @@ const addDepartment = async (req, res) => {
   }
 };
 
-export { addDepartment };
+export { addDepartment, getDepartments };

@@ -5,13 +5,14 @@ import express from 'express';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 // Import controller function to handle department logic
-import { addDepartment } from '../controllers/departmentController.js';
+import { addDepartment, getDepartments } from '../controllers/departmentController.js';
 
 // Create a new router instance
 const router = express.Router();
 
 // Protected route to add a new department
 // Only accessible if the user is authenticated (authMiddleware)
+router.get('/', authMiddleware, getDepartments);
 router.post('/add', authMiddleware, addDepartment);
 
 // Export the router to be used in the main server file
